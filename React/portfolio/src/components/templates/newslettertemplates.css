@@ -1,0 +1,31 @@
+.templateCard {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+button {
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.tempnavbar {
+    margin: 5px;
+}
+
+.containerForTitle {
+    display: 'flex';
+    justify-content: center;
+    align-items: center;
+}
+
+.topRow {
+    padding: 10px;
+}
+
+.card-img-top {
+    height: 340px;
+}
+
+.h-98 {
+    height: 95%;
+}

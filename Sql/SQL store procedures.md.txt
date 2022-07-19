@@ -1,0 +1,239 @@
+DELETE STORE PROCEDURE:
+
+ALTER PROC [dbo].[NewsLetterTemplates_Delete_ById]
+			@Id int 
+
+AS
+
+/*
+------------TEST CODE---------------
+
+		Declare @Id int = 19
+
+		Select *
+		From dbo.NewsLetterTemplates
+		Where Id = @Id
+
+		Execute dbo.NewsLetterTemplates_Delete_ById
+			@Id
+
+		Select *
+		From dbo.NewsLetterTemplates
+		Where Id = @Id
+
+*/
+
+BEGIN
+
+		DELETE FROM [dbo].[NewsLetterTemplates]
+		WHERE Id = @Id
+
+END
+
+------------------------------------------------------------------------------------------------------------------------------------------
+INSERT STORE PROCEDURE:
+
+ALTER PROC [dbo].[NewsLetterTemplates_Insert]
+			@Name nvarchar(100)
+			,@Description nvarchar(200)
+			,@PrimaryImage nvarchar(255)
+			,@CreatedBy int
+			,@Id int OUTPUT
+
+AS 
+
+/*
+
+		DECLARE @Id int = 0
+
+		Declare			 
+			@Name nvarchar(100) = 'insert test'
+			,@Description nvarchar(200) = 'insert des'
+			,@PrimaryImage nvarchar(255) = 'insert img'
+			,@CreatedBy int = 6
+			
+		EXECUTE [dbo].[NewsLetterTemplates_Insert]
+			@Name
+			,@Description
+			,@PrimaryImage
+			,@CreatedBy
+			,@Id OUTPUT
+
+		SELECT *
+		FROM [dbo].[NewsLetterTemplates]
+
+*/
+
+BEGIN
+
+		DECLARE @DateCreated datetime2(7) = GETUTCDATE()
+		DECLARE @DateModified datetime2(7) = GETUTCDATE()
+
+		INSERT INTO [dbo].[NewsLetterTemplates]
+			([Name]
+			,[Description]
+			,[PrimaryImage]
+			,[CreatedBy])
+		VALUES
+			(@Name 
+			,@Description 
+			,@PrimaryImage
+			,@CreatedBy)
+
+		set @Id = SCOPE_IDENTITY()
+
+END
+
+------------------------------------------------------------------------------------------------------------------------------------------
+SEARCH PAGINATED STORE PROCEDURE:
+
+ALTER proc [dbo].[NewsLetterTemplates_Search_Paginated]
+		@PageIndex int 
+		,@PageSize int 
+		,@Query nvarchar(100)
+
+AS
+
+/*
+-----------TEST CODE-------------
+		Declare 
+			@PageIndex int = 0
+			,@PageSize int = 10
+			,@Query nvarchar(100) = 'Two'
+		
+
+		Execute [dbo].[NewsLetterTemplates_Search_Paginated] 
+			@PageIndex
+			,@PageSize
+			,@Query
+																
+*/
+
+BEGIN
+
+		DECLARE	@offset int = @PageIndex * @PageSize
+
+		SELECT 
+			[Id]
+			,[Name]
+			,[Description]
+			,[PrimaryImage]
+			,[DateCreated]
+			,[DateModified]
+			,[CreatedBy]
+			,TotalCount = COUNT(1) OVER()
+
+		FROM [dbo].[NewsLetterTemplates] 
+		WHERE (Description LIKE '%' + @Query + '%') OR (Name LIKE '%' + @Query + '%')
+
+		ORDER BY Id
+
+		OFFSET @offset Rows
+		Fetch next @PageSize rows ONLY
+
+END
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+SELECT ALL PAGINATED STORE PROCEDURE:
+
+ALTER PROC [dbo].[NewsLetterTemplates_SelectAll_Paginated]
+			@PageIndex int
+			,@PageSize int
+
+AS 
+/*
+-----------------TEST CODE----------------
+		DECLARE 
+			@PageIndex int = 0
+			,@PageSize int = 3
+
+		EXECUTE [dbo].[NewsLetterTemplates_SelectAll_Paginated]
+			@PageIndex 
+			,@PageSize 
+				
+--------------- End Test Code -------------
+
+*/
+
+BEGIN
+
+		DECLARE	@offset int = @PageIndex * @PageSize
+
+		SELECT 
+			[Id]
+			,[Name]
+			,[Description]
+			,[PrimaryImage]
+			,[DateCreated]
+			,[DateModified]
+			,[CreatedBy]
+			,TotalCount = COUNT(1) OVER()
+
+		FROM [dbo].[NewsLetterTemplates] 
+
+		ORDER BY Id
+
+		OFFSET @offset Rows
+		Fetch next @PageSize rows ONLY
+
+END
+
+------------------------------------------------------------------------------------------------------------------------------------------
+UPDATE STORE PROCEDURE:
+
+ALTER PROC [dbo].[NewsLetterTemplates_Update]
+				@Id int
+				,@Name nvarchar(100)
+				,@Description nvarchar(200)
+				,@PrimaryImage nvarchar(255)
+				,@CreatedBy int
+
+AS 
+
+/* 
+----------TEST CODE--------------
+
+    Declare     
+				@Id	int	= 15		
+				,@Name nvarchar(100) = 'Updated test'
+				,@Description nvarchar(200) = 'updated test'
+				,@PrimaryImage nvarchar(255) = 'updated img'
+				,@CreatedBy int = 3
+
+    Execute [dbo].[NewsLetterTemplates_Update]
+
+                @Id
+                ,@Name 
+				,@Description
+				,@PrimaryImage
+				,@CreatedBy 
+				 
+	Select *
+	From dbo.NewsLetterTemplates
+
+*/
+
+BEGIN
+
+	DECLARE @DateModified datetime2(7) = GETUTCDATE()
+
+	UPDATE [dbo].[NewsLetterTemplates]
+
+	SET			[Name] = @Name
+			  ,[Description] = @Description
+			  ,[PrimaryImage] = @PrimaryImage
+			  ,[DateModified] = @DateModified
+			  ,[CreatedBy] = @CreatedBy
+
+	WHERE		Id = @Id
+
+END
+
+
+
+
+
+
+
+
+
